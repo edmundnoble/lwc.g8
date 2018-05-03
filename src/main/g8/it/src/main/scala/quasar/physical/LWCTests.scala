@@ -81,7 +81,7 @@ object LWCTests {
       lwfs.children(root).flatMap {
         case None =>
           Task.fail(new Exception(
-            s"children call failed on ${Path.posixCodec.printPath(root)}"
+            s"children call failed on \${Path.posixCodec.printPath(root)}"
           ))
         case Some(childs) =>
           def absolutize(root: ADir, seg: PathSegment): APath =
@@ -114,11 +114,11 @@ object LWCTests {
         lwfs.read(file).attempt.flatMap {
           case -\/(ex) =>
             Task.fail(new Exception(
-              s"Exception occurred while reading $file:\n${showThrowable(ex, 0)}"
+              s"Exception occurred while reading \$file:\n\${showThrowable(ex, 0)}"
             ))
           case \/-(None) =>
             Task.fail(new Exception(
-              s"File $file is not readable."
+              s"File \$file is not readable."
             ))
           case \/-(Some(contentStream)) =>
             contentStream.runLog.map(_.toList).attempt.map {
@@ -143,14 +143,14 @@ object LWCTests {
       val missingErr = if (missing.nonEmpty) {
         Task.fail(new Exception(
           s"""Some unexpected files were present on the filesystem:
-          |${missing.map("  " + _.shows).mkString("\n")}
+          |\${missing.map("  " + _.shows).mkString("\n")}
           """
         ))
       } else Task.now(())
       val extraErr = if (extra.nonEmpty) {
         Task.fail(new Exception(
           s"""Some unexpected files were present on the filesystem:
-          |${missing.map("  " + _.shows).mkString("\n")}
+          |\${missing.map("  " + _.shows).mkString("\n")}
           """
         ))
       } else Task.now(())
@@ -167,18 +167,18 @@ object LWCTests {
               Task.now(())
             case (None, None) => Task.now(())
             case (Some(_), None) => Task.fail(new Exception(
-              s"No valid data was found at $file"
+              s"No valid data was found at \$file"
             ))
             case (None, Some(_)) => Task.fail(new Exception(
-              s"Unexpectedly valid data was found at $file"
+              s"Unexpectedly valid data was found at \$file"
             ))
             case (Some(expectedData), Some(actualData)) =>
               Task.fail(new Exception(
-                s"""Incorrect data was present at $file;
+                s"""Incorrect data was present at \$file;
                 |Actual:
-                |${actualData.shows}
+                |\${actualData.shows}
                 |Expected:
-                |${expectedData.shows}
+                |\${expectedData.shows}
                 """.stripMargin.trim
               ))
           }
@@ -217,8 +217,8 @@ object LWCTests {
     newEx match {
       case MultiCauseException(msg, causes) =>
         s"""
-        |[${msg.fold("")(s"\n$myIndent(" + _ + ")")}
-        |${causes.map(showThrowable(_, indent + 1)).intercalate("\n")}
+        |[\${msg.fold("")(s"\n\$myIndent(" + _ + ")")}
+        |\${causes.map(showThrowable(_, indent + 1)).intercalate("\n")}
         |]
         """.stripMargin.trim + "\n"
       case ex =>
@@ -266,7 +266,7 @@ object LWCTests {
       lwfs.exists(file).flatMap { doesExist =>
         if (!doesExist)
           Task.fail(new Exception(
-            s"File $file does not exist"
+            s"File \$file does not exist"
           ))
         else Task.now(())
       }
