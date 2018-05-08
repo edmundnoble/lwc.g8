@@ -93,7 +93,8 @@ object LWCTests {
           val recChilds = absoluteChilds.map(Path.refineType).toList.collect {
             case -\/(dir) => dir
           }
-          recChilds.traverseM(findPaths).map(newPair :: _)
+          gather(recChilds.map(findPaths), None)
+            .map(chs => newPair :: chs.join)
       }
 
     def readFiles(paths: Map[ADir, List[APath]]): Task[List[(AFile, Option[List[Data]])]] = {
@@ -130,8 +131,8 @@ object LWCTests {
     }
 
     for {
-      paths <- findPaths(Path.rootDir)
-      pathsMap = paths.toMap
+      paths <- gather(List(findPaths(Path.rootDir)), Some("Find paths"))
+      pathsMap = paths.join.toMap
       files <- readFiles(pathsMap)
     } yield TestFS(files.toMap, pathsMap)
   }
