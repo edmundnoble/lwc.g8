@@ -7,7 +7,7 @@ import sbt._
 
 object Dependencies {
   // quasar version with LWC support
-  private val quasarVersion       = "38.2.3"
+  private val quasarVersion       = "42.1.1"
 
   // the connector's dependencies, excluding quasar.
   def lwcCore = Seq(
