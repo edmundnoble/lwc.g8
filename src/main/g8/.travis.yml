@@ -1,0 +1,51 @@
+language: scala
+scala: 2.12.4
+jdk: oraclejdk8
+dist: trusty
+sudo: false
+
+script:
+  - sbt test lwc/assembly assembleLWC
+
+branches:
+  except:
+  - /^v\d+\.\d+\.\d+\$/ # don't redundantly build tags
+
+cache:
+  directories:
+  - \$HOME/.coursier/cache
+  - \$HOME/.ivy2/cache
+  - \$HOME/.sbt
+
+before_cache:
+  - find "\$HOME/.sbt/" -name '*.lock' -print0 | xargs -0 rm
+  - find "\$HOME/.ivy2/" -name 'ivydata-*.properties' -print0 | xargs -0 rm
+
+env:
+  global:
+    - SBT=./sbt
+    # ENCRYPTION_PASSWORD
+    # secure: travis encrypt -r $repoSlug$ "export ENCRYPTION_PASSWORD=something"
+    # GITHUB_TOKEN
+    # secure: travis encrypt -r $repoSlug$ "export GITHUB_TOKEN=something"
+    # GITHUB_ACCESS_TOKEN
+    # secure: travis encrypt -r $repoSlug$ "export GITHUB_ACCESS_TOKEN=something"
+
+deploy:
+  provider: releases
+  #api_key:
+    # secure: travis encrypt -r $repoSlug$ "<github key>"
+  file_glob: false
+  file:
+    - .targets/lwc/scala-2.12/lwc.tar.gz
+  skip_cleanup: true
+  script:
+    - ./scripts/version
+  on:
+    tags: false
+    #all_branches: true
+    # Omit tagged builds and publish on master and backport/*
+    #condition: \$TRAVIS_TAG = '' && (\$TRAVIS_BRANCH == "master" || \$TRAVIS_BRANCH == backport/*)
+
+before_deploy:
+  - scripts/lwcPublishAndTag
