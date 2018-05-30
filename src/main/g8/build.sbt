@@ -94,7 +94,6 @@ concurrentRestrictions in Global := {
 concurrentRestrictions in Global += Tags.exclusive(ExclusiveTest)
 
 lazy val publishSettings = commonPublishSettings ++ Seq(
-  performSonatypeSync := false,   // basically just ignores all the sonatype sync parts of things
   organizationName := "$organization$",
   organizationHomepage := Some(url("$organizationHomepage$")),
   homepage := Some(url("$gitRepoUri$"))
